@@ -1,5 +1,7 @@
 package com.beikdz.scaffold.config;
 
+import cn.dev33.satoken.context.SaHolder;
+import cn.dev33.satoken.exception.SaTokenException;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.interceptor.SaInterceptor;
@@ -19,6 +21,12 @@ public class SaTokenConfigure implements WebMvcConfigurer {
         registry.addInterceptor(new SaInterceptor()).addPathPatterns("/**").excludePathPatterns("/auth/login", "/auth/register", "/swagger-ui/**", "/v3/api-docs/**");
         // 注册 Sa-Token 拦截器
         registry.addInterceptor(new SaInterceptor(handle -> {
+            // 校验请求头中是否包含deviceType参数
+            String deviceType = SaHolder.getRequest().getHeader("Device-Type");
+            if (deviceType == null || deviceType.isEmpty()) {
+                throw new SaTokenException("非法请求");
+            }
+
             // 登录校验
             StpUtil.checkLogin();
 
