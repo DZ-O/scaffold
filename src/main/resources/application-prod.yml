@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://prod-db-host:3306/scaffold?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: prod_user
+    password: prod_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # Redis配置
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6379
+      password: 123456
+      timeout: 5000
+      lettuce:
+        pool:
+          max-active: 300
+          max-idle: 15
+          min-idle: 5
+          max-wait: -1ms
+
+# MyBatis Plus配置
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+# 日志配置
+logging:
+  level:
+    root: ERROR
+    com.example: WARN
+  file:
+    name: logs/prod.log
+    max-size: 100MB
+    max-history: 30

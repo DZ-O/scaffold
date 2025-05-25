@@ -1,0 +1,96 @@
+-- 用户表
+CREATE TABLE `user` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `username` VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
+  `password` VARCHAR(100) NOT NULL COMMENT '密码',
+  `nickname` VARCHAR(50) DEFAULT NULL COMMENT '昵称',
+  `email` VARCHAR(100) DEFAULT NULL COMMENT '邮箱',
+  `phone` VARCHAR(20) DEFAULT NULL COMMENT '手机号',
+  `avatar` VARCHAR(255) DEFAULT NULL COMMENT '头像',
+  `id_card` VARCHAR(32) DEFAULT NULL COMMENT '身份证号',
+  `gender` TINYINT DEFAULT 0 COMMENT '性别 0-未知 1-男 2-女',
+  `org_id` BIGINT DEFAULT NULL COMMENT '组织ID',
+  `tenant_id` BIGINT DEFAULT NULL COMMENT '多租户ID',
+  `ext_json` JSON DEFAULT NULL COMMENT '扩展字段(JSON)',
+  `status` TINYINT DEFAULT 1 COMMENT '状态 1-正常 0-禁用',
+  `remark` VARCHAR(255) DEFAULT NULL COMMENT '备注',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted` TINYINT DEFAULT 0 COMMENT '逻辑删除 0-正常 1-删除'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 角色表
+CREATE TABLE `role` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `code` VARCHAR(50) NOT NULL UNIQUE COMMENT '角色编码',
+  `name` VARCHAR(50) NOT NULL COMMENT '角色名称',
+  `tenant_id` BIGINT DEFAULT NULL COMMENT '多租户ID',
+  `status` TINYINT DEFAULT 1 COMMENT '状态 1-正常 0-禁用',
+  `remark` VARCHAR(255) DEFAULT NULL COMMENT '备注',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted` TINYINT DEFAULT 0 COMMENT '逻辑删除 0-正常 1-删除'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 权限表
+CREATE TABLE `permission` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `parent_id` BIGINT DEFAULT 0 COMMENT '父ID',
+  `code` VARCHAR(100) NOT NULL UNIQUE COMMENT '权限标识',
+  `name` VARCHAR(100) NOT NULL COMMENT '权限名称',
+  `type` VARCHAR(20) DEFAULT 'api' COMMENT '类型（api、menu、button等）',
+  `tenant_id` BIGINT DEFAULT NULL COMMENT '多租户ID',
+  `status` TINYINT DEFAULT 1 COMMENT '状态 1-正常 0-禁用',
+  `remark` VARCHAR(255) DEFAULT NULL COMMENT '备注',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted` TINYINT DEFAULT 0 COMMENT '逻辑删除 0-正常 1-删除'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 用户-角色关联表
+CREATE TABLE `user_role` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `user_id` BIGINT NOT NULL,
+  `role_id` BIGINT NOT NULL,
+  `tenant_id` BIGINT DEFAULT NULL COMMENT '多租户ID',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `uk_user_role` (`user_id`, `role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 角色-权限关联表
+CREATE TABLE `role_permission` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `role_id` BIGINT NOT NULL,
+  `permission_id` BIGINT NOT NULL,
+  `tenant_id` BIGINT DEFAULT NULL COMMENT '多租户ID',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `uk_role_permission` (`role_id`, `permission_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 用户行为日志白名单表
+CREATE TABLE `user_action_log_white` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `type` VARCHAR(20) NOT NULL COMMENT 'user/action/uri',
+  `value` VARCHAR(100) NOT NULL COMMENT '白名单值',
+  `remark` VARCHAR(255) DEFAULT NULL COMMENT '备注',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户行为日志白名单';
+
+-- 用户行为日志表
+CREATE TABLE `user_action_log` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `user_id` BIGINT DEFAULT NULL COMMENT '用户ID',
+  `username` VARCHAR(50) DEFAULT NULL COMMENT '用户名',
+  `action` VARCHAR(100) NOT NULL COMMENT '行为类型/事件',
+  `module` VARCHAR(100) DEFAULT NULL COMMENT '所属模块',
+  `content` VARCHAR(500) DEFAULT NULL COMMENT '行为内容/描述',
+  `ip` VARCHAR(45) DEFAULT NULL COMMENT 'IP地址',
+  `ua` VARCHAR(255) DEFAULT NULL COMMENT 'User-Agent',
+  `tenant_id` BIGINT DEFAULT NULL COMMENT '多租户ID',
+  `org_id` BIGINT DEFAULT NULL COMMENT '组织ID',
+  `ext_json` JSON DEFAULT NULL COMMENT '扩展字段',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_user_id (`user_id`),
+  INDEX idx_action (`action`),
+  INDEX idx_create_time (`create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户行为日志'; 

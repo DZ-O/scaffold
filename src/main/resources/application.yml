@@ -1,0 +1,39 @@
+spring:
+  profiles:
+    active: dev
+
+# MyBatis Plus配置
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# SpringDoc配置
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+# Sa-Token配置
+sa-token:
+  token-name: Authorization
+  timeout: 86400
+  is-concurrent: true
+  is-share: false
+  token-style: jwt
+  is-log: true
+  jwt-secret-key: qwasiniaciasubfiaudas
+  token-dao-type: redis
+  token-prefix: "scaffold:token:"
+  is-read-cookie: false
+  is-read-header: true
+
+# 用户行为日志配置
+user-action-log:
+  ignore-users: "1,2,3"
+  ignore-actions: "LOGIN,LOGOUT"
+  ignore-uris: "/health,/metrics"
